@@ -1,28 +1,45 @@
-"""High-level RAG pipeline orchestrating retrieval and generation."""
+"""RAG pipeline orchestrating retrieval and Ollama generation."""
 
+from __future__ import annotations
+
+from config.settings import get_settings
 from llm.ollama_client import OllamaClient
-from config.settings import Settings
 from rag.retriever import retrieve_context
+from utils.logger import setup_logger
 
 
-class RAGPipeline:
-    """Combine retrieval with LLM generation for local assistant responses."""
+def _build_prompt(query: str, contexts: list[dict[str, str]]) -> str:
+    """Build a simple context-injected prompt for the LLM."""
+    if contexts:
+        context_lines = [
+            f"- [{item.get('type', 'unknown')}] {item.get('source', 'unknown')}: {item.get('content', '')}"
+            for item in contexts
+        ]
+        context_block = "\n".join(context_lines)
+    else:
+        context_block = "No relevant context found."
 
-    def __init__(self, settings: Settings, llm_client: OllamaClient) -> None:
-        """Initialize pipeline dependencies."""
-        self._settings = settings
-        self._llm_client = llm_client
+    return (
+        "Use the following context to answer the question.\n\n"
+        f"Context:\n{context_block}\n\n"
+        f"Question:\n{query}\n"
+    )
 
-    def run(self, query: str) -> str:
-        """Run retrieval-augmented generation for a query."""
-        contexts = retrieve_context(query=query, settings=self._settings, k=self._settings.top_k)
-        context_block = "\n\n".join(contexts) if contexts else "No relevant context found."
 
-        prompt = (
-            "You are DevMentor, a local code assistant.\n"
-            "Use the context to answer the user's question clearly.\n\n"
-            f"Context:\n{context_block}\n\n"
-            f"Question:\n{query}\n\n"
-            "Answer:"
-        )
-        return self._llm_client.generate_response(prompt=prompt)
+def run_rag(query: str) -> str:
+    """Run retrieval + generation and return the final LLM response."""
+    settings = get_settings()
+    logger = setup_logger(level=settings.log_level)
+
+    if not query.strip():
+        return "Please provide a non-empty query."
+
+    contexts = retrieve_context(query=query, k=settings.top_k)
+    prompt = _build_prompt(query=query, contexts=contexts)
+
+    try:
+        llm_client = OllamaClient(settings=settings)
+        return llm_client.generate_response(prompt=prompt)
+    except Exception as exc:
+        logger.warning("RAG pipeline generation failed: %s", exc)
+        return "Unable to generate a response right now. Please verify Ollama is running."

@@ -3,10 +3,9 @@
 from pathlib import Path
 
 from config.settings import get_settings
-from llm.ollama_client import OllamaClient
 from rag.embeddings import get_embedding_model
 from rag.ingest import ingest_documents
-from rag.pipeline import RAGPipeline
+from rag.pipeline import run_rag
 from utils.logger import setup_logger
 
 
@@ -47,16 +46,14 @@ def main() -> None:
         logger.warning("Embedding model warmup skipped due to error: %s", exc)
 
     try:
-        ingested = ingest_documents(settings=settings)
-        logger.info("Document ingestion completed. Documents processed: %s", ingested)
+        ingest_documents()
+        logger.info("Document ingestion completed.")
     except Exception as exc:  # pragma: no cover - startup resilience
         logger.warning("Ingestion skipped due to error: %s", exc)
 
     try:
-        llm_client = OllamaClient(settings=settings)
-        rag_pipeline = RAGPipeline(settings=settings, llm_client=llm_client)
         demo_query = "How can I debug a Python AttributeError quickly?"
-        response = rag_pipeline.run(query=demo_query)
+        response = run_rag(query=demo_query)
         logger.info("Sample response: %s", response[:400] if response else "(empty response)")
     except Exception as exc:  # pragma: no cover - Ollama may not be running
         logger.warning("LLM request skipped or failed: %s", exc)
