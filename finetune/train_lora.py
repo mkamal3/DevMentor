@@ -169,7 +169,7 @@ def formatting_prompts_func(example: dict[str, str]) -> str:
     return f"{example['prompt']}\n\n{example['completion']}"
 
 
-def build_sft_config(training_cfg: dict[str, Any], max_seq_length: int) -> SFTConfig:
+def build_sft_config(training_cfg: dict[str, Any]) -> SFTConfig:
     """Build an SFTConfig (the TRL wrapper around HuggingFace TrainingArguments)."""
     return SFTConfig(
         output_dir=training_cfg["output_dir"],
@@ -191,8 +191,8 @@ def build_sft_config(training_cfg: dict[str, Any], max_seq_length: int) -> SFTCo
         save_total_limit=training_cfg["save_total_limit"],
         bf16=training_cfg["bf16"],
         seed=training_cfg["seed"],
-        max_seq_length=max_seq_length,
         report_to="none",             # Disable wandb/tensorboard by default
+        completion_only_loss=False,   # Use full prompt+completion text with formatting_func
         gradient_checkpointing=True,  # Trade compute for memory — needed on L4
     )
 
@@ -286,7 +286,6 @@ def main() -> None:
     # --- 6. Run training (Stage C) ---
     sft_config = build_sft_config(
         training_cfg=config["training"],
-        max_seq_length=config["model"]["max_seq_length"],
     )
 
     trainer = run_training(
