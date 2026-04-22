@@ -1,0 +1,17 @@
+# LoRA fine-tuning dependencies (Bhanu's module)
+# Install with: pip install -r requirements-finetune.txt
+#
+# Most of these are GPU-heavy and only needed for training.
+# Training itself happens on Colab, but `datasets` and `huggingface-hub`
+# are also needed locally for dataset prep.
+
+# Core training stack (GPU-intensive; used on Colab)
+transformers>=4.44.0
+accelerate>=0.30.0
+peft>=0.12.0
+bitsandbytes>=0.43.0
+trl>=0.9.0
+
+# Dataset handling (used both locally and on Colab)
+datasets>=2.19.0
+huggingface-hub>=0.24.0

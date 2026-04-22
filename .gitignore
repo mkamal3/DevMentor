@@ -10,3 +10,27 @@ venv/
 .env
 chroma_db/*
 !chroma_db/.gitkeep
+# ============================================
+# LoRA fine-tuning (Bhanu) — added in Step 4
+# ============================================
+
+# Raw downloaded datasets — too big for Git, anyone can re-download
+data/bugfix/raw/
+
+# Processed training files — big, regenerable from script
+data/bugfix/processed/*.jsonl
+
+# BUT keep one small sample file so teammates can see the format
+!data/bugfix/processed/sample.jsonl
+
+# Trained LoRA adapter weights — too big for Git
+models/lora_adapter/
+
+# Model weight files in general
+*.safetensors
+*.bin
+*.gguf
+
+# Python cache & Jupyter checkpoints
+__pycache__/
+.ipynb_checkpoints/
