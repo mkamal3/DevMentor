@@ -45,74 +45,235 @@ from config.settings import get_settings  # noqa: E402
 from prompts.devmentor_prompt import build_user_message, get_system_prompt  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# Standardised test prompts (3 difficulty levels × varied bug types)
+# Standardised test prompts — Ketu's 30-case ablation benchmark
+# Syntax (1-10) | Logic (11-20) | Performance/Runtime (21-30)
 # ---------------------------------------------------------------------------
 TEST_PROMPTS: list[dict[str, str]] = [
-    # --- Syntax / NameError ---
+    # ── SYNTAX ERRORS (Cases 1–10) ──────────────────────────────────────────
     {
-        "id": "syntax_01",
-        "difficulty": "syntax",
+        "id": "syntax_01", "difficulty": "syntax",
+        "keywords": ["colon", "syntax", "def"],
+        "code": "def greet(name)\n    print('Hello', name)",
+    },
+    {
+        "id": "syntax_02", "difficulty": "syntax",
+        "keywords": ["colon", "syntax", "if"],
+        "code": "x = 10\nif x > 5\n    print('big')",
+    },
+    {
+        "id": "syntax_03", "difficulty": "syntax",
+        "keywords": ["typo", "primt", "NameError", "print"],
+        "code": "primt('Hello World')",
+    },
+    {
+        "id": "syntax_04", "difficulty": "syntax",
+        "keywords": ["indent", "IndentationError", "return"],
+        "code": "def add(a, b):\nreturn a + b",
+    },
+    {
+        "id": "syntax_05", "difficulty": "syntax",
+        "keywords": ["bracket", "SyntaxError", "closing"],
+        "code": "nums = [1, 2, 3\nprint(nums)",
+    },
+    {
+        "id": "syntax_06", "difficulty": "syntax",
+        "keywords": ["quote", "string", "SyntaxError", "unterminated"],
+        "code": "msg = 'Hello World\nprint(msg)",
+    },
+    {
+        "id": "syntax_07", "difficulty": "syntax",
+        "keywords": ["colon", "for", "syntax"],
+        "code": "for i in range(5)\n    print(i)",
+    },
+    {
+        "id": "syntax_08", "difficulty": "syntax",
+        "keywords": ["colon", "class", "syntax"],
+        "code": "class Dog\n    def bark(self):\n        print('Woof')",
+    },
+    {
+        "id": "syntax_09", "difficulty": "syntax",
+        "keywords": ["parenthesis", "SyntaxError", "unclosed"],
+        "code": "result = (10 + 5\nprint(result)",
+    },
+    {
+        "id": "syntax_10", "difficulty": "syntax",
+        "keywords": ["typo", "retrn", "return", "NameError"],
+        "code": "def multiply(a, b):\n    retrn a * b",
+    },
+    # ── LOGIC ERRORS (Cases 11–20) ───────────────────────────────────────────
+    {
+        "id": "logic_11", "difficulty": "logic",
+        "keywords": ["condition", "modulo", "odd", "wrong"],
+        "code": "def is_even(n):\n    return n % 2 == 1",
+    },
+    {
+        "id": "logic_12", "difficulty": "logic",
+        "keywords": ["base case", "recursion", "infinite", "RecursionError"],
+        "code": "def factorial(n):\n    return n * factorial(n - 1)",
+    },
+    {
+        "id": "logic_13", "difficulty": "logic",
+        "keywords": ["swap", "overwrite", "temp", "original"],
+        "code": "def swap(a, b):\n    a = b\n    b = a\n    return a, b",
+    },
+    {
+        "id": "logic_14", "difficulty": "logic",
+        "keywords": ["off-by-one", "index", "range", "IndexError"],
+        "code": "items = [1,2,3]\nfor i in range(len(items)+1):\n    print(items[i])",
+    },
+    {
+        "id": "logic_15", "difficulty": "logic",
+        "keywords": ["formula", "precedence", "fahrenheit", "celsius"],
         "code": (
-            "def greet(name):\n"
-            "    print('Hello, ' + nane)\n\n"
-            "greet('Alice')"
+            "def celsius_to_fahrenheit(c):\n"
+            "    return c * 9 / 5 + 32\n\n"
+            "print(celsius_to_fahrenheit(0))    # expected 32\n"
+            "print(celsius_to_fahrenheit(100))  # expected 212"
         ),
     },
     {
-        "id": "syntax_02",
-        "difficulty": "syntax",
+        "id": "logic_16", "difficulty": "logic",
+        "keywords": ["uppercase", "lower", "case", "vowel"],
         "code": (
-            "numbers = [1, 2, 3]\n"
-            "for num in numbers\n"
-            "    print(num)"
+            "def count_vowels(s):\n"
+            "    count = 0\n"
+            "    for ch in s:\n"
+            "        if ch in 'aeiou':\n"
+            "            count += 1\n"
+            "    return count\n"
+            "# Fails on uppercase vowels like 'A','E'"
         ),
     },
-    # --- Logic errors ---
     {
-        "id": "logic_01",
-        "difficulty": "logic",
+        "id": "logic_17", "difficulty": "logic",
+        "keywords": ["negative", "initialize", "max_val", "zero"],
+        "code": (
+            "def find_max(lst):\n"
+            "    max_val = 0\n"
+            "    for x in lst:\n"
+            "        if x > max_val:\n"
+            "            max_val = x\n"
+            "    return max_val"
+        ),
+    },
+    {
+        "id": "logic_18", "difficulty": "logic",
+        "keywords": ["infinite loop", "lo", "mid", "binary search"],
+        "code": (
+            "def binary_search(arr, target):\n"
+            "    lo, hi = 0, len(arr)\n"
+            "    while lo < hi:\n"
+            "        mid = (lo + hi) // 2\n"
+            "        if arr[mid] == target: return mid\n"
+            "        elif arr[mid] < target: lo = mid\n"
+            "        else: hi = mid\n"
+            "    return -1"
+        ),
+    },
+    {
+        "id": "logic_19", "difficulty": "logic",
+        "keywords": ["indent", "loop", "body", "outside"],
+        "code": "total = 0\nfor i in range(1, 11):\ntotal += i\nprint(total)",
+    },
+    {
+        "id": "logic_20", "difficulty": "logic",
+        "keywords": ["TypeError", "type", "integer", "string"],
         "code": (
             "def is_palindrome(s):\n"
-            "    return s == s[1:-1]\n\n"
-            "print(is_palindrome('racecar'))  # Expected True, got False"
+            "    return s == s[::-1]\n"
+            "# Works for strings but called with integer:\n"
+            "is_palindrome(12321)"
+        ),
+    },
+    # ── PERFORMANCE / RUNTIME ISSUES (Cases 21–30) ───────────────────────────
+    {
+        "id": "perf_21", "difficulty": "performance",
+        "keywords": ["ZeroDivisionError", "zero", "division", "guard"],
+        "code": "def divide(a, b):\n    return a / b",
+    },
+    {
+        "id": "perf_22", "difficulty": "performance",
+        "keywords": ["IndexError", "empty", "bounds", "check"],
+        "code": "def first(lst):\n    return lst[0]",
+    },
+    {
+        "id": "perf_23", "difficulty": "performance",
+        "keywords": ["NoneType", "None", "AttributeError", "TypeError"],
+        "code": "d = None\nprint(d['key'])",
+    },
+    {
+        "id": "perf_24", "difficulty": "performance",
+        "keywords": ["close", "context manager", "with", "leak"],
+        "code": "import os\nf = open('data.txt')\ndata = f.read()",
+    },
+    {
+        "id": "perf_25", "difficulty": "performance",
+        "keywords": ["O(n", "quadratic", "count", "performance", "set"],
+        "code": (
+            "def has_dup(lst):\n"
+            "    for i in lst:\n"
+            "        if lst.count(i) > 1:\n"
+            "            return True\n"
+            "    return False"
         ),
     },
     {
-        "id": "logic_02",
-        "difficulty": "logic",
+        "id": "perf_26", "difficulty": "performance",
+        "keywords": ["exponential", "memoization", "cache", "performance", "lru_cache"],
         "code": (
-            "def factorial(n):\n"
-            "    result = 0\n"
-            "    for i in range(1, n + 1):\n"
-            "        result *= i\n"
-            "    return result\n\n"
-            "print(factorial(5))  # Expected 120, got 0"
-        ),
-    },
-    # --- Performance issues ---
-    {
-        "id": "perf_01",
-        "difficulty": "performance",
-        "code": (
-            "def find_duplicates(lst):\n"
-            "    duplicates = []\n"
-            "    for i in range(len(lst)):\n"
-            "        for j in range(len(lst)):\n"
-            "            if i != j and lst[i] == lst[j]:\n"
-            "                if lst[i] not in duplicates:\n"
-            "                    duplicates.append(lst[i])\n"
-            "    return duplicates"
+            "def fib(n):\n"
+            "    if n <= 1: return n\n"
+            "    return fib(n-1) + fib(n-2)\n\n"
+            "fib(50)  # extremely slow"
         ),
     },
     {
-        "id": "perf_02",
-        "difficulty": "performance",
+        "id": "perf_27", "difficulty": "performance",
+        "keywords": ["join", "concatenation", "performance", "O(n"],
         "code": (
-            "def fibonacci(n):\n"
-            "    if n <= 1:\n"
-            "        return n\n"
-            "    return fibonacci(n - 1) + fibonacci(n - 2)\n\n"
-            "print(fibonacci(40))  # Takes a very long time"
+            "result = ''\n"
+            "for word in ['Hello', 'World', 'from', 'Python']:\n"
+            "    result += word + ' '"
+        ),
+    },
+    {
+        "id": "perf_28", "difficulty": "performance",
+        "keywords": ["race condition", "lock", "thread", "mutex", "concurrent"],
+        "code": (
+            "import threading\n"
+            "counter = 0\n"
+            "def increment():\n"
+            "    global counter\n"
+            "    for _ in range(100000):\n"
+            "        counter += 1\n"
+            "t1 = threading.Thread(target=increment)\n"
+            "t2 = threading.Thread(target=increment)\n"
+            "t1.start(); t2.start()\n"
+            "t1.join(); t2.join()\n"
+            "print(counter)"
+        ),
+    },
+    {
+        "id": "perf_29", "difficulty": "performance",
+        "keywords": ["connection", "pool", "every call", "reuse"],
+        "code": (
+            "def get_user(user_id):\n"
+            "    db = connect_to_database()  # opens new connection every call\n"
+            "    return db.query(f'SELECT * FROM users WHERE id={user_id}')"
+        ),
+    },
+    {
+        "id": "perf_30", "difficulty": "performance",
+        "keywords": ["extend", "new list", "performance", "concatenation", "memory"],
+        "code": (
+            "def flatten(nested):\n"
+            "    flat = []\n"
+            "    for item in nested:\n"
+            "        if isinstance(item, list):\n"
+            "            flat = flat + flatten(item)  # creates new list each time\n"
+            "        else:\n"
+            "            flat.append(item)\n"
+            "    return flat"
         ),
     },
 ]
@@ -155,6 +316,7 @@ class RunResult:
     vram_before_mb: Optional[float]
     vram_after_mb: Optional[float]
     vram_delta_mb: Optional[float]
+    detected: bool          # keyword-based auto-score (matches Ketu's eval method)
     response_preview: str
 
 
@@ -267,6 +429,9 @@ def _run_once(
     if vram_before is not None and vram_after is not None:
         vram_delta = vram_after - vram_before
 
+    keywords = prompt_meta.get("keywords", [])
+    detected = any(kw.lower() in response_text.lower() for kw in keywords)
+
     return RunResult(
         prompt_id=prompt_meta["id"],
         difficulty=prompt_meta["difficulty"],
@@ -279,6 +444,7 @@ def _run_once(
         vram_before_mb=round(vram_before, 1) if vram_before is not None else None,
         vram_after_mb=round(vram_after, 1) if vram_after is not None else None,
         vram_delta_mb=round(vram_delta, 1) if vram_delta is not None else None,
+        detected=detected,
         response_preview=response_text[:120].replace("\n", " "),
     )
 
@@ -315,30 +481,38 @@ def _print_report(report: BenchmarkReport) -> None:
             continue
 
         print(f"\n{config_labels[cfg]}")
-        print(f"{'Prompt':<14} {'Diff':<12} {'Avg Lat':>9} {'Tok/s':>7} {'RAM Δ':>8} {'VRAM Δ':>9}")
-        print("-" * 62)
+        print(f"{'Prompt':<14} {'Diff':<12} {'Det':>4} {'Avg Lat':>9} {'Tok/s':>7} {'VRAM Δ':>9}")
+        print("-" * 66)
 
-        for pid in {r.prompt_id for r in cfg_results}:
-            runs = [r for r in cfg_results if r.prompt_id == pid]
-            diff = runs[0].difficulty
-            avg_lat = _avg([r.latency_s for r in runs])
-            avg_tps = _avg([r.tokens_per_sec for r in runs])
-            avg_ram = _avg([r.ram_delta_mb for r in runs])
-            vram_vals = [r.vram_delta_mb for r in runs if r.vram_delta_mb is not None]
+        seen: set[str] = set()
+        for r in cfg_results:
+            if r.prompt_id in seen:
+                continue
+            seen.add(r.prompt_id)
+            runs = [x for x in cfg_results if x.prompt_id == r.prompt_id]
+            avg_lat = _avg([x.latency_s for x in runs])
+            avg_tps = _avg([x.tokens_per_sec for x in runs])
+            det_count = sum(1 for x in runs if x.detected)
+            det_str = f"{det_count}/{len(runs)}"
+            vram_vals = [x.vram_delta_mb for x in runs if x.vram_delta_mb is not None]
             vram_str = f"{_avg(vram_vals):+.1f} MB" if vram_vals else "N/A"
             print(
-                f"{pid:<14} {diff:<12} {avg_lat:>8.2f}s {avg_tps:>7.1f} "
-                f"{avg_ram:>+7.1f} MB {vram_str:>9}"
+                f"{r.prompt_id:<14} {r.difficulty:<12} {det_str:>4} "
+                f"{avg_lat:>8.2f}s {avg_tps:>7.1f} {vram_str:>9}"
             )
 
-        # Config-level averages
+        # Config-level summary
         all_lat = [r.latency_s for r in cfg_results]
         all_tps = [r.tokens_per_sec for r in cfg_results]
+        total_det = sum(1 for r in cfg_results if r.detected)
         vram_all = [r.vram_delta_mb for r in cfg_results if r.vram_delta_mb is not None]
-        print("-" * 62)
+        acc_pct = 100 * total_det / len(cfg_results) if cfg_results else 0
+        print("-" * 66)
         print(
-            f"{'AVERAGE':<14} {'':<12} {_avg(all_lat):>8.2f}s {_avg(all_tps):>7.1f} "
-            f"{'':>9} {'N/A' if not vram_all else f'{_avg(vram_all):+.1f} MB':>9}"
+            f"{'SUMMARY':<14} {'':<12} "
+            f"{total_det}/{len(cfg_results)} ({acc_pct:.0f}%)  "
+            f"{_avg(all_lat):>6.2f}s {_avg(all_tps):>7.1f} "
+            f"{'N/A' if not vram_all else f'{_avg(vram_all):+.1f} MB':>9}"
         )
 
     print("\n" + "=" * 72 + "\n")
