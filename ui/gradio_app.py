@@ -19,6 +19,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -29,13 +30,15 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import gradio as gr  # noqa: E402
 
-from config.settings import get_settings  # noqa: E402
+from config.settings import Settings, get_settings  # noqa: E402
 from llm.ollama_client import OllamaClient  # noqa: E402
 from prompts.devmentor_prompt import build_user_message, get_system_prompt  # noqa: E402
 from rag.retriever import retrieve_context  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# CSS — dark theme matching Ketu's Colab design
+# CSS — dark theme
+# input[type="radio"] and input[type="checkbox"] are excluded from dark
+# overrides so the radio buttons remain fully interactive and visible.
 # ---------------------------------------------------------------------------
 _CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap');
@@ -44,7 +47,7 @@ body, .gradio-container {
     background: #0d0f14 !important;
     font-family: 'Syne', sans-serif;
 }
-#dm-title { text-align: center; padding: 1.5rem 0 0.5rem; }
+#dm-title { text-align: center; padding: 1.2rem 0 0.8rem; }
 #dm-title h1 {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -55,9 +58,14 @@ body, .gradio-container {
     background-clip: text;
     margin: 0;
 }
-#dm-title p { color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin: 4px 0 0; }
-.label-text { font-family: 'Syne', sans-serif !important; color: #94a3b8 !important; font-weight: 600 !important; }
-textarea, input {
+#dm-title p {
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    margin: 4px 0 0;
+}
+textarea,
+input:not([type="radio"]):not([type="checkbox"]):not([type="button"]) {
     background: #0a0c10 !important;
     border: 1px solid #1e2435 !important;
     color: #e2e8f0 !important;
@@ -78,11 +86,12 @@ button.primary {
     font-weight: 700 !important;
     border: none !important;
     border-radius: 8px !important;
+    font-size: 1rem !important;
 }
 """
 
 # ---------------------------------------------------------------------------
-# Example bug cases (shown at bottom of UI for quick testing)
+# Example bug cases
 # ---------------------------------------------------------------------------
 _EXAMPLES = [
     ["def divide(a, b):\n    return a / b", "Mode A — Prompt Engineering Only"],
@@ -110,14 +119,12 @@ def analyze(code: str, mode: str) -> tuple[str, str]:
 
     settings = get_settings()
 
-    # Determine model: Mode C uses the LoRA adapter if configured
-    import os
-    if mode == "Mode C — Base + RAG + LoRA":
-        model_name = os.environ.get("LORA_MODEL", settings.ollama_model)
-    else:
-        model_name = settings.ollama_model
+    model_name = (
+        os.environ.get("LORA_MODEL", settings.ollama_model)
+        if mode == "Mode C — Base + RAG + LoRA"
+        else settings.ollama_model
+    )
 
-    # Retrieve RAG context for Modes B and C
     contexts: list[dict] = []
     if mode != "Mode A — Prompt Engineering Only":
         try:
@@ -128,8 +135,6 @@ def analyze(code: str, mode: str) -> tuple[str, str]:
     system = get_system_prompt()
     user = build_user_message(query=code, contexts=contexts)
 
-    # Swap model on the client for Mode C
-    from config.settings import Settings
     patched = Settings(
         ollama_model=model_name,
         ollama_base_url=settings.ollama_base_url,
@@ -165,17 +170,19 @@ def analyze(code: str, mode: str) -> tuple[str, str]:
 
 def launch_ui(share: bool = False, port: int = 7860) -> None:
     """Build and launch the DevMentor Gradio interface."""
-    with gr.Blocks(css=_CSS, title="DevMentor") as demo:
+    with gr.Blocks(title="DevMentor") as demo:
 
+        # ── Header ──────────────────────────────────────────────────────────
         gr.HTML("""
         <div id="dm-title">
             <h1>DevMentor</h1>
-            <p>// privacy-first local code review &amp; debugging assistant · CSIT595 · Montclair State</p>
+            <p>privacy-first local code review &amp; debugging assistant</p>
         </div>
         """)
 
+        # ── Top row: mode selector + analyze button ──────────────────────────
         with gr.Row():
-            with gr.Column(scale=1):
+            with gr.Column(scale=3):
                 mode = gr.Radio(
                     choices=[
                         "Mode A — Prompt Engineering Only",
@@ -185,8 +192,18 @@ def launch_ui(share: bool = False, port: int = 7860) -> None:
                     value="Mode A — Prompt Engineering Only",
                     label="Select Mode",
                 )
+            with gr.Column(scale=1, min_width=220):
+                analyze_btn = gr.Button(
+                    "Analyze with DevMentor",
+                    variant="primary",
+                    size="lg",
+                )
+
+        # ── Main row: code input | output ────────────────────────────────────
+        with gr.Row():
+            with gr.Column(scale=1):
                 code_input = gr.Textbox(
-                    lines=18,
+                    lines=20,
                     placeholder=(
                         "# Paste your Python / JS / Java code here...\n\n"
                         "def get_item(lst, i):\n"
@@ -194,28 +211,28 @@ def launch_ui(share: bool = False, port: int = 7860) -> None:
                     ),
                     label="Code Input",
                 )
-                analyze_btn = gr.Button("Analyze with DevMentor", variant="primary")
-
             with gr.Column(scale=1):
                 metrics_out = gr.Textbox(
                     label="Metrics",
                     interactive=False,
-                    lines=1,
+                    lines=2,
                     elem_classes=["output-box"],
                 )
                 response_out = gr.Textbox(
-                    lines=22,
+                    lines=18,
                     label="DevMentor Analysis",
                     interactive=False,
                     elem_classes=["output-box"],
                 )
 
+        # ── Wire button ──────────────────────────────────────────────────────
         analyze_btn.click(
             fn=analyze,
             inputs=[code_input, mode],
             outputs=[response_out, metrics_out],
         )
 
+        # ── Examples ─────────────────────────────────────────────────────────
         gr.Examples(
             examples=_EXAMPLES,
             inputs=[code_input, mode],
@@ -224,11 +241,11 @@ def launch_ui(share: bool = False, port: int = 7860) -> None:
 
         gr.Markdown(
             "**Running locally via Ollama** — no code leaves your machine. "
-            "Set `LORA_MODEL=<model-name>` env var to enable Mode C with Bhanu's LoRA adapter.",
+            "Set `LORA_MODEL=<model-name>` env var to activate Mode C with Bhanu's LoRA adapter.",
             elem_classes=["output-box"],
         )
 
-    demo.launch(share=share, server_port=port, debug=False)
+    demo.launch(share=share, server_port=port, debug=False, css=_CSS)
 
 
 # ---------------------------------------------------------------------------
