@@ -10,7 +10,7 @@ from config.settings import Settings
 class OllamaClient:
     """Simple reusable wrapper around Ollama's generate endpoint."""
 
-    def __init__(self, settings: Settings, timeout_seconds: int = 60) -> None:
+    def __init__(self, settings: Settings, timeout_seconds: int = 300) -> None:
         """Initialize client with app settings."""
         self._base_url = settings.ollama_base_url.rstrip("/")
         self._model = settings.ollama_model
