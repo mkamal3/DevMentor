@@ -1,6 +1,6 @@
 """Ollama client wrapper for generating responses."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import requests
 
@@ -8,7 +8,7 @@ from config.settings import Settings
 
 
 class OllamaClient:
-    """Simple reusable wrapper around Ollama's generate endpoint."""
+    """Reusable wrapper around Ollama's generate and chat endpoints."""
 
     def __init__(self, settings: Settings, timeout_seconds: int = 300) -> None:
         """Initialize client with app settings."""
@@ -17,10 +17,10 @@ class OllamaClient:
         self._timeout_seconds = timeout_seconds
 
     def generate_response(self, prompt: str) -> str:
-        """Generate a text response using the configured Ollama model.
+        """Generate a response via the /api/generate endpoint (single prompt string).
 
         Args:
-            prompt: Input prompt string.
+            prompt: Full prompt string including any context and instructions.
 
         Returns:
             Model-generated response text.
@@ -38,3 +38,35 @@ class OllamaClient:
         response.raise_for_status()
         data = response.json()
         return str(data.get("response", "")).strip()
+
+    def generate_chat_response(self, system: str, user: str) -> str:
+        """Generate a response via the /api/chat endpoint with role separation.
+
+        Keeps the system prompt (persona + format rules) cleanly separated from
+        the user message (code to review + RAG context), which produces more
+        consistent structured output than a single flat prompt string.
+
+        Args:
+            system: The system prompt defining DevMentor's role and output format.
+            user: The user-turn message containing the code/error and RAG context.
+
+        Returns:
+            Model-generated response text.
+        """
+        messages: List[Dict[str, str]] = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ]
+        payload: Dict[str, Any] = {
+            "model": self._model,
+            "messages": messages,
+            "stream": False,
+        }
+        response = requests.post(
+            url=f"{self._base_url}/api/chat",
+            json=payload,
+            timeout=self._timeout_seconds,
+        )
+        response.raise_for_status()
+        data = response.json()
+        return str(data.get("message", {}).get("content", "")).strip()

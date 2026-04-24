@@ -4,30 +4,25 @@ from __future__ import annotations
 
 from config.settings import get_settings
 from llm.ollama_client import OllamaClient
+from prompts.devmentor_prompt import build_user_message, get_system_prompt
 from rag.retriever import retrieve_context
 from utils.logger import setup_logger
 
 
-def _build_prompt(query: str, contexts: list[dict[str, str]]) -> str:
-    """Build a simple context-injected prompt for the LLM."""
-    if contexts:
-        context_lines = [
-            f"- [{item.get('type', 'unknown')}] {item.get('source', 'unknown')}: {item.get('content', '')}"
-            for item in contexts
-        ]
-        context_block = "\n".join(context_lines)
-    else:
-        context_block = "No relevant context found."
-
-    return (
-        "Use the following context to answer the question.\n\n"
-        f"Context:\n{context_block}\n\n"
-        f"Question:\n{query}\n"
-    )
-
-
 def run_rag(query: str) -> str:
-    """Run retrieval + generation and return the final LLM response."""
+    """Run retrieval + generation and return the final LLM response.
+
+    Flow:
+      1. Retrieve top-k relevant chunks from ChromaDB.
+      2. Build a structured user message (RAG context + code query).
+      3. Send system prompt + user message to Ollama via /api/chat.
+
+    Args:
+        query: The code snippet or error message submitted by the user.
+
+    Returns:
+        Structured DevMentor response with Bug ID, Root Cause, and Fix.
+    """
     settings = get_settings()
     logger = setup_logger(level=settings.log_level)
 
@@ -35,11 +30,13 @@ def run_rag(query: str) -> str:
         return "Please provide a non-empty query."
 
     contexts = retrieve_context(query=query, k=settings.top_k)
-    prompt = _build_prompt(query=query, contexts=contexts)
+
+    system = get_system_prompt()
+    user = build_user_message(query=query, contexts=contexts)
 
     try:
         llm_client = OllamaClient(settings=settings)
-        return llm_client.generate_response(prompt=prompt)
+        return llm_client.generate_chat_response(system=system, user=user)
     except Exception as exc:
         logger.warning("RAG pipeline generation failed: %s", exc)
         return "Unable to generate a response right now. Please verify Ollama is running."
