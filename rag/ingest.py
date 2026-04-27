@@ -15,6 +15,7 @@ from utils.logger import setup_logger
 CHUNK_SIZE = 400
 CHUNK_OVERLAP = 80
 ALLOWED_SUFFIXES = {".txt", ".md"}
+UPSERT_BATCH_SIZE = 5000
 
 
 def _iter_source_files(base_path: Path) -> Iterable[Path]:
@@ -98,6 +99,13 @@ def ingest_documents() -> None:
 
     client = chromadb.PersistentClient(path=settings.chroma_path)
     collection = client.get_or_create_collection(name=settings.chroma_collection_name)
-    collection.upsert(ids=all_ids, documents=all_chunks, metadatas=all_metadatas, embeddings=embeddings)
+    for start in range(0, len(all_ids), UPSERT_BATCH_SIZE):
+        end = start + UPSERT_BATCH_SIZE
+        collection.upsert(
+            ids=all_ids[start:end],
+            documents=all_chunks[start:end],
+            metadatas=all_metadatas[start:end],
+            embeddings=embeddings[start:end],
+        )
 
     logger.info("RAG ingestion completed successfully.")

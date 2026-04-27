@@ -17,6 +17,11 @@ chroma_db/*
 # Raw downloaded datasets — too big for Git, anyone can re-download
 data/bugfix/raw/
 
+# Fetched/generated RAG data (regenerable from fetch script)
+data/docs/
+data/errors/
+data/_tmp_tldr/
+
 # Processed training files — big, regenerable from script
 data/bugfix/processed/*.jsonl
 

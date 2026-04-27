@@ -1,18 +1,20 @@
 # DevMentor
 
-DevMentor is a privacy-first, locally running AI assistant scaffold for code review and debugging, built with Ollama + RAG.
+DevMentor is a privacy-first, locally running AI assistant for code review and debugging, built with Ollama + RAG.
 
-## Features in this scaffold
+## Features
 
 - Config system via environment variables (`config/settings.py`)
-- Local Ollama client wrapper (`llm/ollama_client.py`)
-- RAG components:
-  - ingestion (`rag/ingest.py`)
-  - retrieval (`rag/retriever.py`)
-  - pipeline orchestration (`rag/pipeline.py`)
-- Logging utility (`utils/logger.py`)
-- FastAPI starter (`api/main.py`)
-- Prompt/UI placeholders for separate team implementation
+- Ollama client wrapper with both generate/chat methods (`llm/ollama_client.py`)
+- RAG pipeline:
+  - document ingestion + chunking (`rag/ingest.py`)
+  - similarity retrieval (`rag/retriever.py`)
+  - retrieval + generation orchestration (`rag/pipeline.py`)
+- Structured prompt layer (`prompts/devmentor_prompt.py`)
+- Gradio app with three operation modes (`ui/gradio_app.py`)
+- FastAPI backend scaffold (`api/main.py`)
+- LoRA fine-tuning scripts (`finetune/`)
+- Benchmark utility (`utils/benchmark.py`)
 
 ## Project setup
 
@@ -47,18 +49,32 @@ ollama pull qwen2.5-coder:7b
 
 3. Ensure Ollama is running at `http://localhost:11434`.
 
-## Run the app
+## Run the CLI app
 
 ```bash
 python app.py
 ```
 
-The app will:
-- attempt to ingest local documents from `data/docs` and `data/errors`
-- attempt a sample RAG query through Ollama
+The CLI app will:
+- warm the embedding model cache
+- ingest docs from `data/docs` and `data/errors`
+- run a sample RAG query through Ollama
 - log warnings instead of crashing if Ollama is unavailable
 
-## Run FastAPI scaffold (optional)
+## Run the Gradio UI
+
+```bash
+python ui/gradio_app.py
+```
+
+Optional flags:
+
+```bash
+python ui/gradio_app.py --port 7860
+python ui/gradio_app.py --share
+```
+
+## Run FastAPI backend (optional)
 
 ```bash
 uvicorn api.main:app --reload
@@ -103,9 +119,21 @@ OLLAMA_MODEL=qwen2.5-coder:7b
 ```
 No code changes required — just a config switch.
 
+## Fine-tuning workflow (optional)
+
+Install additional dependencies:
+
+```bash
+pip install -r requirements-finetune.txt
+```
+
+Then use:
+- `finetune/prepare_dataset.py`
+- `finetune/train_lora.py`
+
+with config from `finetune/configs/lora_config.yaml`.
+
 ## Notes for contributors
 
-- `prompts/devmentor_prompt.py` is a placeholder pending Javed's prompt engineering work
-- `ui/gradio_app.py` is scaffold-only and intentionally raises `NotImplementedError`
-- `models/` is reserved for LoRA adapter artifacts (Bhanu)
+- `models/` is reserved for LoRA adapter artifacts
 - Never commit `.env` — use `.env.example` as the template

@@ -255,7 +255,7 @@ def analyze(code: str, mode: str) -> tuple[str, str]:
 # Layout
 # ---------------------------------------------------------------------------
 
-def launch_ui(share: bool = False, port: int = 7860) -> None:
+def launch_ui(share: bool = False, port: int = 7860, open_browser: bool = True) -> None:
     with gr.Blocks(title="DevMentor") as demo:
 
         # Header
@@ -322,7 +322,7 @@ def launch_ui(share: bool = False, port: int = 7860) -> None:
             label="Example Bug Cases",
         )
 
-    demo.launch(share=share, server_port=port, debug=False, css=_CSS)
+    demo.launch(share=share, server_port=port, debug=False, css=_CSS, inbrowser=open_browser)
 
 
 # ---------------------------------------------------------------------------
@@ -333,5 +333,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DevMentor Gradio UI")
     parser.add_argument("--share", action="store_true")
     parser.add_argument("--port", type=int, default=7860)
+    parser.add_argument(
+        "--no-open",
+        action="store_true",
+        help="Disable automatic browser opening on launch.",
+    )
     args = parser.parse_args()
-    launch_ui(share=args.share, port=args.port)
+    launch_ui(share=args.share, port=args.port, open_browser=not args.no_open)
