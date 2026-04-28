@@ -1,5 +1,6 @@
 """Ollama client wrapper for generating responses."""
 
+import re
 from typing import Any, Dict, List
 
 import requests
@@ -15,6 +16,21 @@ class OllamaClient:
         self._base_url = settings.ollama_base_url.rstrip("/")
         self._model = settings.ollama_model
         self._timeout_seconds = timeout_seconds
+
+    @staticmethod
+    def _clean_response_text(text: str) -> str:
+        """Remove leaked chat control tokens from model output."""
+        cleaned = text
+        noise_tokens = [
+            "<|im_start|>",
+            "<|im_end|>",
+            "<|endoftext|>",
+            "[response]",
+        ]
+        for token in noise_tokens:
+            cleaned = cleaned.replace(token, "")
+        cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+        return cleaned.strip()
 
     def generate_response(self, prompt: str) -> str:
         """Generate a response via the /api/generate endpoint (single prompt string).
@@ -37,7 +53,7 @@ class OllamaClient:
         )
         response.raise_for_status()
         data = response.json()
-        return str(data.get("response", "")).strip()
+        return self._clean_response_text(str(data.get("response", "")))
 
     def generate_chat_response(self, system: str, user: str) -> str:
         """Generate a response via the /api/chat endpoint with role separation.
@@ -69,4 +85,5 @@ class OllamaClient:
         )
         response.raise_for_status()
         data = response.json()
-        return str(data.get("message", {}).get("content", "")).strip()
+        content = str(data.get("message", {}).get("content", ""))
+        return self._clean_response_text(content)

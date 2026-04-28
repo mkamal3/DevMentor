@@ -235,10 +235,29 @@ def analyze(code: str, mode: str) -> tuple[str, str]:
 
     t0 = time.perf_counter()
     try:
-        response = OllamaClient(settings=patched).generate_chat_response(
+        client = OllamaClient(settings=patched)
+        response = client.generate_chat_response(
             system=get_system_prompt(),
             user=build_user_message(query=code, contexts=contexts),
         )
+        # Some LoRA checkpoints can echo training templates instead of producing
+        # final analysis. If detected, retry once with a stricter instruction.
+        lower = response.lower()
+        looks_like_template_echo = (
+            "please provide a response in this format" in lower
+            or ("bug:" in lower and "fix:" in lower and "## 1." not in response)
+        )
+        if looks_like_template_echo:
+            retry_user = (
+                f"{build_user_message(query=code, contexts=contexts)}\n\n"
+                "Return ONLY the final answer. Do not repeat instructions, "
+                "templates, or example format text."
+            )
+            response = client.generate_chat_response(
+                system=get_system_prompt(),
+                user=retry_user,
+            )
+
     except Exception as exc:
         return _md_to_html(f"Error: {exc}\n\nMake sure Ollama is running: ollama serve"), ""
     latency = time.perf_counter() - t0

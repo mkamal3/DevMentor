@@ -1,0 +1,20 @@
+# DevMentor LoRA — Ollama model definition (sample)
+#
+# Steps:
+# 1. Place your quantized GGUF next to this file (e.g. devmentor-q4_k_m.gguf)
+# 2. Update FROM below to match the filename
+# 3. From THIS directory run:
+#      ollama create devmentor-lora -f Modelfile
+# 4. In .env set: LORA_MODEL=devmentor-lora
+#
+# Reference: https://github.com/ollama/ollama/blob/main/docs/modelfile.md
+
+FROM ./devmentor-q4_k_m.gguf
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+PARAMETER num_ctx 8192
+PARAMETER repeat_penalty 1.05
+
+# Optional persona for Mode C — you can also rely on app prompts alone.
+# SYSTEM """You are DevMentor, a privacy-first assistant for code review and debugging."""

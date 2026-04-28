@@ -133,6 +133,17 @@ Then use:
 
 with config from `finetune/configs/lora_config.yaml`.
 
+### LoRA adapter → Ollama (production path)
+
+After training, HF adapters cannot be consumed directly by Ollama. Merge, convert to GGUF, then register a local model:
+
+1. **Merge**: `python finetune/merge_lora.py --use-4bit-base` (writes `models/devmentor_merged/`).
+2. **GGUF**: use llama.cpp + `python finetune/ollama/export_gguf.py` (requires `LLAMA_CPP` env), then quantize.
+3. **Ollama**: `finetune/ollama/Modelfile.sample` + `ollama create devmentor-lora -f Modelfile`.
+4. **App**: set `LORA_MODEL=devmentor-lora` in `.env` for Gradio Mode C.
+
+Full commands: [`finetune/ollama/README.md`](finetune/ollama/README.md).
+
 ## Notes for contributors
 
 - `models/` is reserved for LoRA adapter artifacts
