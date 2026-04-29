@@ -1,0 +1,677 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "config_A": {
+    "overall": {
+      "total_cases": 30,
+      "bug_detection_accuracy": 93.33,
+      "fix_correctness": 86.67,
+      "explanation_clarity_avg_1_to_5": 4.63,
+      "hallucination_rate": 0.0,
+      "avg_latency_s": 4.82
+    },
+    "by_difficulty": {
+      "syntax": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 90.0,
+        "fix_correctness": 80.0,
+        "explanation_clarity_avg_1_to_5": 4.1,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 4.22
+      },
+      "logic": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 90.0,
+        "fix_correctness": 80.0,
+        "explanation_clarity_avg_1_to_5": 4.8,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 5.02
+      },
+      "performance": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 100.0,
+        "fix_correctness": 100.0,
+        "explanation_clarity_avg_1_to_5": 5.0,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 5.23
+      }
+    }
+  },
+  "config_B": {
+    "overall": {
+      "total_cases": 30,
+      "bug_detection_accuracy": 93.33,
+      "fix_correctness": 90.0,
+      "explanation_clarity_avg_1_to_5": 4.77,
+      "hallucination_rate": 0.0,
+      "avg_latency_s": 5.26
+    },
+    "by_difficulty": {
+      "syntax": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 90.0,
+        "fix_correctness": 90.0,
+        "explanation_clarity_avg_1_to_5": 4.5,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 4.14
+      },
+      "logic": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 90.0,
+        "fix_correctness": 90.0,
+        "explanation_clarity_avg_1_to_5": 4.9,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 5.81
+      },
+      "performance": {
+        "total_cases": 10,
+        "bug_detection_accuracy": 100.0,
+        "fix_correctness": 90.0,
+        "explanation_clarity_avg_1_to_5": 4.9,
+        "hallucination_rate": 0.0,
+        "avg_latency_s": 5.83
+      }
+    }
+  },
+  "cases": [
+    {
+      "config": "A",
+      "prompt_id": "syntax_01",
+      "difficulty": "syntax",
+      "latency_s": 8.902,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_02",
+      "difficulty": "syntax",
+      "latency_s": 4.0,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_03",
+      "difficulty": "syntax",
+      "latency_s": 4.011,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_04",
+      "difficulty": "syntax",
+      "latency_s": 3.254,
+      "bug_detected": false,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_05",
+      "difficulty": "syntax",
+      "latency_s": 3.721,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_06",
+      "difficulty": "syntax",
+      "latency_s": 3.659,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_07",
+      "difficulty": "syntax",
+      "latency_s": 3.625,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_08",
+      "difficulty": "syntax",
+      "latency_s": 3.34,
+      "bug_detected": true,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_09",
+      "difficulty": "syntax",
+      "latency_s": 4.085,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "syntax_10",
+      "difficulty": "syntax",
+      "latency_s": 3.557,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_11",
+      "difficulty": "logic",
+      "latency_s": 4.791,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_12",
+      "difficulty": "logic",
+      "latency_s": 5.841,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_13",
+      "difficulty": "logic",
+      "latency_s": 5.611,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_14",
+      "difficulty": "logic",
+      "latency_s": 5.356,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_15",
+      "difficulty": "logic",
+      "latency_s": 3.913,
+      "bug_detected": true,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_16",
+      "difficulty": "logic",
+      "latency_s": 4.612,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_17",
+      "difficulty": "logic",
+      "latency_s": 5.703,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_18",
+      "difficulty": "logic",
+      "latency_s": 5.387,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_19",
+      "difficulty": "logic",
+      "latency_s": 3.235,
+      "bug_detected": false,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "logic_20",
+      "difficulty": "logic",
+      "latency_s": 5.759,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_21",
+      "difficulty": "performance",
+      "latency_s": 4.342,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_22",
+      "difficulty": "performance",
+      "latency_s": 4.849,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_23",
+      "difficulty": "performance",
+      "latency_s": 4.863,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_24",
+      "difficulty": "performance",
+      "latency_s": 4.533,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_25",
+      "difficulty": "performance",
+      "latency_s": 5.017,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_26",
+      "difficulty": "performance",
+      "latency_s": 6.205,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_27",
+      "difficulty": "performance",
+      "latency_s": 5.23,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_28",
+      "difficulty": "performance",
+      "latency_s": 6.288,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_29",
+      "difficulty": "performance",
+      "latency_s": 5.355,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "A",
+      "prompt_id": "perf_30",
+      "difficulty": "performance",
+      "latency_s": 5.642,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_01",
+      "difficulty": "syntax",
+      "latency_s": 3.497,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_02",
+      "difficulty": "syntax",
+      "latency_s": 3.928,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_03",
+      "difficulty": "syntax",
+      "latency_s": 3.83,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_04",
+      "difficulty": "syntax",
+      "latency_s": 3.086,
+      "bug_detected": false,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_05",
+      "difficulty": "syntax",
+      "latency_s": 4.668,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_06",
+      "difficulty": "syntax",
+      "latency_s": 4.183,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_07",
+      "difficulty": "syntax",
+      "latency_s": 4.244,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_08",
+      "difficulty": "syntax",
+      "latency_s": 5.338,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_09",
+      "difficulty": "syntax",
+      "latency_s": 4.694,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "syntax_10",
+      "difficulty": "syntax",
+      "latency_s": 3.96,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_11",
+      "difficulty": "logic",
+      "latency_s": 4.956,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_12",
+      "difficulty": "logic",
+      "latency_s": 6.217,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_13",
+      "difficulty": "logic",
+      "latency_s": 6.394,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_14",
+      "difficulty": "logic",
+      "latency_s": 5.171,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_15",
+      "difficulty": "logic",
+      "latency_s": 5.438,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_16",
+      "difficulty": "logic",
+      "latency_s": 5.788,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_17",
+      "difficulty": "logic",
+      "latency_s": 6.782,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_18",
+      "difficulty": "logic",
+      "latency_s": 8.004,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_19",
+      "difficulty": "logic",
+      "latency_s": 3.5,
+      "bug_detected": false,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "logic_20",
+      "difficulty": "logic",
+      "latency_s": 5.879,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_21",
+      "difficulty": "performance",
+      "latency_s": 3.748,
+      "bug_detected": true,
+      "fix_correct": false,
+      "clarity_score": 4.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_22",
+      "difficulty": "performance",
+      "latency_s": 5.135,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_23",
+      "difficulty": "performance",
+      "latency_s": 5.627,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_24",
+      "difficulty": "performance",
+      "latency_s": 6.598,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_25",
+      "difficulty": "performance",
+      "latency_s": 5.747,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_26",
+      "difficulty": "performance",
+      "latency_s": 6.273,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_27",
+      "difficulty": "performance",
+      "latency_s": 5.849,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_28",
+      "difficulty": "performance",
+      "latency_s": 6.63,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_29",
+      "difficulty": "performance",
+      "latency_s": 6.561,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    },
+    {
+      "config": "B",
+      "prompt_id": "perf_30",
+      "difficulty": "performance",
+      "latency_s": 6.124,
+      "bug_detected": true,
+      "fix_correct": true,
+      "clarity_score": 5.0,
+      "hallucinated": false
+    }
+  ]
+}

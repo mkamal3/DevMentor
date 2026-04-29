@@ -34,12 +34,14 @@ from typing import Optional
 
 import psutil
 import requests
+from dotenv import load_dotenv
 
 # ---------------------------------------------------------------------------
 # Ensure project root is on sys.path so config/settings imports work
 # ---------------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 from config.settings import get_settings  # noqa: E402
 from prompts.devmentor_prompt import build_user_message, get_system_prompt  # noqa: E402
@@ -396,13 +398,20 @@ def _run_once(
     base_url: str,
     timeout: int,
     use_rag_context: bool,
-    live_rag_contexts: list[dict],
+    top_k: int,
 ) -> RunResult:
     code = prompt_meta["code"]
     system = get_system_prompt()
 
     if use_rag_context:
-        contexts = live_rag_contexts if live_rag_contexts else _MOCK_RAG_CONTEXT
+        try:
+            from rag.retriever import retrieve_context
+
+            contexts = retrieve_context(query=code, k=top_k)
+        except Exception:
+            contexts = []
+        if not contexts:
+            contexts = _MOCK_RAG_CONTEXT
     else:
         contexts = []
 
@@ -560,14 +569,6 @@ def main() -> None:
         "C": {"model": lora_model, "use_rag": True},
     }
 
-    # Try to get live RAG context from ChromaDB for Config B/C
-    live_contexts: list[dict] = []
-    try:
-        from rag.retriever import retrieve_context
-        live_contexts = retrieve_context(query="common Python bugs", k=3)
-    except Exception:
-        pass  # falls back to _MOCK_RAG_CONTEXT in _run_once
-
     report = BenchmarkReport(
         model=base_model,
         lora_model=lora_model if lora_model != base_model else "(not set — using base model)",
@@ -600,7 +601,7 @@ def main() -> None:
                         base_url=base_url,
                         timeout=settings.top_k * 100 + 300,  # generous ceiling
                         use_rag_context=use_rag,
-                        live_rag_contexts=live_contexts,
+                        top_k=settings.top_k,
                     )
                     report.results.append(result)
                     print(f"{result.latency_s:.2f}s  {result.tokens_per_sec:.1f} tok/s")

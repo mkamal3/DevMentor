@@ -14,11 +14,14 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import gradio as gr  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
 from config.settings import Settings, get_settings  # noqa: E402
 from llm.ollama_client import OllamaClient  # noqa: E402
 from prompts.devmentor_prompt import build_user_message, get_system_prompt  # noqa: E402
 from rag.retriever import retrieve_context  # noqa: E402
+
+load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 # ---------------------------------------------------------------------------
 # Section heading colours (applied inside the HTML analysis output)
